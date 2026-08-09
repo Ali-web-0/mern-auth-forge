@@ -1,0 +1,24 @@
+{
+  "name": "mern-auth-forge",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Production-grade MERN authentication & authorization boilerplate — refresh token rotation, RBAC, tenant scoping, structured error handling.",
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev:server": "npm run dev --workspace server",
+    "dev:client": "npm run dev --workspace client",
+    "build:server": "npm run build --workspace server",
+    "build:client": "npm run build --workspace client",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "fmt": "biome format .",
+    "fmt:fix": "biome format --write .",
+    "test:server:unit": "npm run test:unit --workspace server",
+    "test:server:int": "npm run test:int --workspace server",
+    "test:e2e": "npm run test:e2e --workspace server"
+  },
+  "license": "MIT"
+}
