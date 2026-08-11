@@ -1,4 +1,4 @@
-import { type InferSchemaType, Schema, model } from 'mongoose'
+import { type InferSchemaType, type Model, Schema, type Types, model, models } from 'mongoose'
 
 /**
  * We never store raw refresh tokens — only a SHA-256 hash (see lib/tokens.ts
@@ -28,5 +28,9 @@ const refreshTokenSchema = new Schema(
 // detection above still has something to compare against.
 refreshTokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 })
 
-export type RefreshTokenDoc = InferSchemaType<typeof refreshTokenSchema> & { _id: string }
-export const RefreshToken = model('RefreshToken', refreshTokenSchema)
+// _id is Types.ObjectId at runtime, not string — see Note.model.ts for why.
+export type RefreshTokenDoc = InferSchemaType<typeof refreshTokenSchema> & { _id: Types.ObjectId }
+// Guard against "Cannot overwrite model once compiled", with an explicit
+// cast to keep real types on query call sites — see User.model.ts for why.
+type RefreshTokenModel = Model<RefreshTokenDoc>
+export const RefreshToken = (models.RefreshToken || model('RefreshToken', refreshTokenSchema)) as RefreshTokenModel

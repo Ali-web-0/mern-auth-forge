@@ -9,8 +9,9 @@ function extractTokenFromResetLink(logCalls: unknown[][]): string {
   const call = logCalls.find((args) => typeof args[0] === 'string' && args[0].includes('reset link'))
   const message = call?.[0] as string | undefined
   const match = message?.match(/token=([^\s]+)/)
-  if (!match) throw new Error('Reset link not found in mailer stub output')
-  return match[1]
+  const token = match?.[1]
+  if (!token) throw new Error('Reset link not found in mailer stub output')
+  return token
 }
 
 describe('password reset flow', () => {

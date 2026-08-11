@@ -1,4 +1,4 @@
-import { type InferSchemaType, Schema, model } from 'mongoose'
+import { type InferSchemaType, type Model, Schema, type Types, model, models } from 'mongoose'
 
 // Same "never store the raw token" rule as RefreshToken — only the hash
 // lives in the DB. `usedAt` prevents a token being replayed after a
@@ -15,5 +15,10 @@ const passwordResetTokenSchema = new Schema(
 
 passwordResetTokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 })
 
-export type PasswordResetTokenDoc = InferSchemaType<typeof passwordResetTokenSchema> & { _id: string }
-export const PasswordResetToken = model('PasswordResetToken', passwordResetTokenSchema)
+// _id is Types.ObjectId at runtime, not string — see Note.model.ts for why.
+export type PasswordResetTokenDoc = InferSchemaType<typeof passwordResetTokenSchema> & { _id: Types.ObjectId }
+// Guard against "Cannot overwrite model once compiled", with an explicit
+// cast to keep real types on query call sites — see User.model.ts for why.
+type PasswordResetTokenModel = Model<PasswordResetTokenDoc>
+export const PasswordResetToken = (models.PasswordResetToken ||
+  model('PasswordResetToken', passwordResetTokenSchema)) as PasswordResetTokenModel
