@@ -1,4 +1,4 @@
-import { type InferSchemaType, type Model, Schema, type Types, model, models } from 'mongoose'
+import mongoose, { type InferSchemaType, type Model, Schema, type Types, model } from 'mongoose'
 
 const userSchema = new Schema(
   {
@@ -32,10 +32,13 @@ export type UserDoc = InferSchemaType<typeof userSchema> & { _id: Types.ObjectId
 // throws if you call model() twice for the same name. Reuse the existing
 // registration instead of re-declaring it.
 //
-// The `as Model<UserDoc>` here is necessary, not just convenient: mongoose's
-// `models.User` is loosely typed as `Model<any>`, so without the assertion
-// TypeScript infers a near-useless union type across both branches and
-// every query call site (User.findOne(...), etc.) loses its real types.
-// We know both branches really are the User model at runtime — this just
-// tells the compiler what we already know.
-export const User = (models.User || model('User', userSchema)) as Model<UserDoc>
+// Two non-obvious things here:
+// 1. `mongoose.models.User` (property access on the default import), not a
+//    named `{ models }` import — mongoose defines `.models` as a getter, and
+//    Node's native ESM loader doesn't reliably detect that as a named export
+//    on a CJS package, even though the types say it's fine. This only shows
+//    up in the actual compiled/deployed build, not under tsx or Vitest.
+// 2. The `as Model<UserDoc>` is necessary, not just convenient: without it,
+//    TypeScript infers a near-useless union type across both branches and
+//    every query call site (User.findOne(...), etc.) loses its real types.
+export const User = (mongoose.models.User || model('User', userSchema)) as Model<UserDoc>
