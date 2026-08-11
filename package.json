@@ -12,6 +12,8 @@
     "dev:client": "npm run dev --workspace client",
     "build:server": "npm run build --workspace server",
     "build:client": "npm run build --workspace client",
+    "build": "npm run build:client && npm run build:server",
+    "start": "npm run start --workspace server",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "fmt": "biome format .",
